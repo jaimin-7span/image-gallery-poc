@@ -1,0 +1,146 @@
+<div class="modal  fixed inset-0 z-50 overflow-auto bg-black bg-opacity-50" aria-labelledby="modal-title" role="dialog"
+    aria-modal="true">
+    <div class="modal-content mx-auto my-10 bg-white w-full max-w-md rounded">
+        <!-- Modal content -->
+        <div class="relative bg-white rounded-lg shadow">
+            <!-- Modal header -->
+            <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t">
+                <h3 class="text-xl font-semibold text-gray-900">
+                    {{ this.imageData?.type != 'view'? 'Upload Image' :'View Image'}}
+                </h3>
+                <button type="button"
+                    class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center"
+                    (click)="onCancel()">
+                    <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                        viewBox="0 0 14 14">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                    </svg>
+                    <span class="sr-only">Close modal</span>
+                </button>
+            </div>
+            <!-- Modal body -->
+            <div class="p-4 md:p-5 space-y-4">
+                <form [formGroup]="uploadImageForm">
+                    <div class="flex mb-4 items-center justify-center w-full">
+                        @if (!imagePreviewUrl) {
+                        <div for="dropzone-file"
+                            class="flex items-center flex-col justify-center w-64 h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50  hover:bg-gray-100"
+                            (click)="fileInput.click()" (dragover)="onDragOver($event)"
+                            (dragleave)="onDragLeave($event)" (drop)="onDrop($event)">
+                            <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                <svg class="w-8 h-8 mb-4 text-gray-500" aria-hidden="true"
+                                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2" />
+                                </svg>
+                                <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">Click to upload</span>
+                                    or drag and drop file</p>
+                                <p class="text-xs text-gray-500">SVG, PNG, JPG</p>
+                            </div>
+                            <input type="hidden" name='fileHidden' formControlName="uploadFile">
+                            <input id="dropzone-file" class="hidden" accept="image/*" (change)="onFileSelected($event)"
+                                #fileInput type="file" />
+                            @if (uploadImageForm.get('uploadFile')?.hasError('required') &&
+                            uploadImageForm.get('uploadFile')?.touched) {
+                            <mat-error>
+                                {{validationMessage.REQUIRED_FILE}}
+                            </mat-error>
+                            }
+                            @if (uploadImageForm.get('uploadFile')?.hasError('invalidFileType')) {
+                            <mat-error>
+                                {{validationMessage.ALLOWED_FILE}}
+                            </mat-error>
+                            }
+                            @if (uploadImageForm.get('uploadFile')?.hasError('invalidFileSize')) {
+                            <mat-error>
+                                {{validationMessage.FILE_SIZE_LIMIT}}
+                            </mat-error>
+                            }
+                        </div>
+                        } @else {
+                        <div for="dropzone-file" class="relative">
+                            <div
+                                class="w-64 h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50  hover:bg-gray-100">
+                                <img src="{{imagePreviewUrl}}" alt="" class="w-full h-full object-contain">
+                                @if (this.imageData?.type != 'view') {
+                                <div class="absolute top-0 right-0 p-2">
+                                    <button (click)="resetFileData()" class="text-red-500 hover:text-red-700">
+                                        <mat-icon>delete</mat-icon>
+                                    </button>
+                                </div>
+                                }
+                            </div>
+                        </div>
+                        }
+                    </div>
+                    <div class="flex mb-4 justify-center ">
+
+                        <mat-form-field class="w-full">
+                            <mat-label>Title</mat-label>
+                            <input matInput name="title" placeholder="Enter Title" type="text" formControlName="title">
+                            @if (uploadImageForm.get('title')?.hasError('required')) {
+                            <mat-error>
+                                {{validationMessage.REQUIRED_TITLE}}
+                            </mat-error>
+                            }
+                        </mat-form-field>
+                    </div>
+                    <div class="flex mb-4 justify-center ">
+
+                        <mat-form-field class="w-full">
+                            <mat-chip-grid #chipList aria-label="Tags selection" formControlName="tags">
+                                @for (tag of tags?.value; track tag) {
+                                <mat-chip-row (removed)="removeTag(tag)">
+                                    {{tag}}
+                                    <button matChipRemove [attr.aria-label]="'remove ' + tag">
+                                        <mat-icon>cancel</mat-icon>
+                                    </button>
+                                </mat-chip-row>
+                                }
+                                <input placeholder="New Tag..." [matChipInputFor]="chipList"
+                                    [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                                    [matChipInputAddOnBlur]="addOnBlur" (matChipInputTokenEnd)="addTag($event)">
+                            </mat-chip-grid>
+                            @if (uploadImageForm.get('tags')?.hasError('required')) {
+                            <mat-error>
+                                {{validationMessage.REQUIRED_TAG}}
+                            </mat-error>
+                            }
+                        </mat-form-field>
+
+                    </div>
+                </form>
+            </div>
+            <!-- Modal footer -->
+            <div class="flex justify-between items-center p-4 md:p-5 border-t border-gray-200 rounded-b">
+                <div>
+                    @if (this.imageData?.type != 'view') {
+                    @if (!isApiCalling) {
+                    <button type="submit"
+                        class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+                        (click)="onSubmit()">Upload</button>
+                    }@else {
+                    <button type="button"
+                        class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-6 py-3 text-center">
+                        <mat-spinner [diameter]="22" class="white-spinner"></mat-spinner>
+                    </button>
+                    }
+                    }
+
+                    <button type="button"
+                        class="ms-3 text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10"
+                        (click)="onCancel()">Cancel</button>
+                </div>
+                <div>
+                    @if (uploadProgress > 0) {
+                    <div>
+                        <p>Upload Progress: {{ uploadProgress.toFixed(2) }}%</p>
+                    </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

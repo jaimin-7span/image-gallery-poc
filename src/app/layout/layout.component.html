@@ -1,0 +1,17 @@
+<div class="h-full !overflow-hidden">
+    <mat-sidenav-container class="m-0 app-drawer-container h-full">
+        <mat-sidenav #drawer autosize mode="side" opened="{{drawer.opened}}" class="!top-[96px] sm:!top-[105px] w-40 overflow-scroll">
+        <app-sidebar (tagName)="tagNameFilter($event)" />
+        </mat-sidenav>
+        <mat-sidenav-content class="!overflow-hidden">
+            <header class="fixed left-0 right-0 top-0">
+                <app-header (toggleMenu)="toggleSidebar()" (searchInput)="searchData($event)"/>
+            </header>
+            <main class="mt-[96px] sm:mt-[105px]">
+                <div class="p-6">
+                    <app-image-list [searchData]="searchByInput" [tagData]="searchByTag"/>
+                </div>
+            </main>
+        </mat-sidenav-content>
+    </mat-sidenav-container>
+</div>

@@ -1,0 +1,21 @@
+<div class="w-full flex items-center justify-between px-6 pt-4 sm:pt-6 sticky top-0 bg-white">
+    <div>
+        <h1 class="text-base font-semibold md:mb-5px hidden md:block">Gallery</h1>
+        <button mat-icon-button (click)="toggleSidebar()" class="sm:block  md:hidden">
+            <mat-icon>menu</mat-icon>
+        </button>
+    </div>
+    <!-- search input -->
+    <div class="w-1/2">
+        <mat-form-field class="w-full">
+            <mat-label>Search</mat-label>
+            <input matInput name="search" placeholder="Search" type="text" [(ngModel)]="search" (keyup.enter)="searchData()">
+            @if (search) {
+            <button class="mr-2" type="button" matSuffix (click)="search = '' ; searchData()" [attr.aria-label]="'Clear'">
+                <mat-icon>clear</mat-icon>
+            </button>
+            }
+        </mat-form-field>
+    </div>
+
+</div>
