@@ -2,17 +2,19 @@ import { Injectable } from "@angular/core";
 import * as AWS from 'aws-sdk';
 import { Observable } from "rxjs";
 import { uploadRequestData } from "../layout/layout.model";
+import { AppConst } from "../helper/app-const";
 
 @Injectable({
   providedIn: 'root',
 })
 
 export class UploadService {
+  
     setAWSConfig(){
         AWS.config.update({
-            accessKeyId: 'AKIAWN5TGMRYADSPVLEQ',
-            secretAccessKey: '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',
-            region: 'ap-south-1',
+            accessKeyId: AppConst.accessKeyId,
+            secretAccessKey: AppConst.secretAccessKey,
+            region: AppConst.region,
           });
          return new AWS.S3();
     }
@@ -28,9 +30,11 @@ export class UploadService {
           };
           
           return new Observable<{ progress: number, data?: any }>((observer) => {
-            bucket.upload(params, { partSize: 5 * 1024 * 1024 })
+            bucket.upload(params, { partSize: 20 * 1024 * 1024 })
             .on('httpUploadProgress', (progress:{ loaded: number; total: number }) => {
+              
               const percentage:number = (progress.loaded / progress.total) * 100;
+              console.log(percentage);
               observer.next({ progress: percentage });
             })
             .send((err:any, data:any) => {

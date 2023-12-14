@@ -25,6 +25,7 @@ import { StoreService } from '../../services/store.service';
 import { SharedService } from '../../services/shared.service';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { viewImageData } from '../../layout/layout.model';
+import { take } from 'rxjs';
 
 @Component({
   selector: 'app-upload-image-dialog',
@@ -191,42 +192,56 @@ export class UploadImageDialogComponent {
       this.uploadImageForm.markAllAsTouched();
     } else {
       this.uploadImageForm.disable();
-      this.isApiCalling = true;
+      this.isApiCalling = false;
       console.log(this.uploadImageForm.get('uploadFile')?.value.name);
-      this.uploadService
-        .uploadFileToBucket(this.uploadImageForm.value)
-        .subscribe({
-          next: (res) => {
-            this.uploadProgress = res.progress;
-            if (this.uploadProgress === 100) {
-              if (res.data) {
-                this.storeService
-                  .addDataInStore(this.uploadImageForm.value, res.data)
-                  .then((result) => {
-                    console.log(result);
-                    this.isApiCalling = false;
-                    this.dialogRef.close('yes');
-                  })
-                  .catch((err) => {
-                    console.log(err);
-                    this.isApiCalling = false;
-                    this.uploadImageForm.enable();
-                    this.sharedService.loggerError(
-                      'Something went wrong please try again after sometime.'
-                    );
-                  });
-              }
-            }
-          },
-          error: (error) => {
-            this.uploadProgress = 0;
-            this.isApiCalling = false;
-            this.uploadImageForm.enable();
+      this.storeService.checkTitleExists(this.uploadImageForm.value).pipe(take(1)).subscribe({
+        next: (exists) => {
+          console.log(exists,'exi');
+          if (!exists) {
+            this.uploadService
+              .uploadFileToBucket(this.uploadImageForm.value)
+              .subscribe({
+                next: (res) => {
+                  this.uploadProgress = res.progress;
+                  if (this.uploadProgress === 100) {
+                    if (res.data) {
+                      this.storeService
+                        .addDataInStore(this.uploadImageForm.value, res.data)
+                        .then((result) => {
+                          console.log(result);
+                          this.isApiCalling = false;
+                          this.dialogRef.close('yes');
+                        })
+                        .catch((err) => {
+                          console.log(err);
+                          this.isApiCalling = false;
+                          this.uploadImageForm.enable();
+                          this.sharedService.loggerError(
+                            'Something went wrong please try again after sometime.'
+                          );
+                        });
+                    }
+                  }
+                },
+                error: (error) => {
+                  this.uploadProgress = 0;
+                  this.isApiCalling = false;
+                  this.uploadImageForm.enable();
+                  this.sharedService.loggerError(
+                    'Something went wrong please try again after sometime.'
+                  );
+                },
+              });
+          } else {
+            console.log('Title already exists');
             this.sharedService.loggerError(
-              'Something went wrong please try again after sometime.'
+              'Title already exists.'
             );
-          },
-        });
+            this.uploadImageForm.enable();
+            this.isApiCalling = false;
+          }
+        },
+      });
     }
   }
 

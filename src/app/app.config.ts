@@ -5,6 +5,7 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 import { getFirestore, provideFirestore } from '@angular/fire/firestore';
 import { FIREBASE_OPTIONS } from '@angular/fire/compat';
 import { provideToastr } from 'ngx-toastr';
+import { AppConst } from './helper/app-const';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -14,14 +15,7 @@ export const appConfig: ApplicationConfig = {
     importProvidersFrom(provideFirestore(() => getFirestore())),
     {
       provide: FIREBASE_OPTIONS,
-      useValue: {
-        apiKey: 'AIzaSyCEsasPHU3nGeUnsKKXbnUrW3BpKYClZSM',
-        authDomain: 'notify-be8dd.firebaseapp.com',
-        projectId: 'notify-be8dd',
-        storageBucket: 'notify-be8dd.appspot.com',
-        messagingSenderId: '312238653480',
-        appId: '1:312238653480:web:e7ed7cd3ba6283c376b51d',
-      },
+      useValue: AppConst.firebaseKeys,
     },
   ],
 };

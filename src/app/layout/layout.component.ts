@@ -30,15 +30,18 @@ export class LayoutComponent {
   ngAfterViewInit(): void {
     
     console.log(this.drawer);
-    this.observer.observe(['(min-width: 768px)']).subscribe((res) => {
-      if (!res.matches) {
-        
-        this.drawer.close();
-      } else {
-        this.drawer.open();
-        
-      }
-    });
+    setTimeout(() => {
+      this.observer.observe(['(min-width: 768px)']).subscribe((res) => {
+        if (!res.matches) {
+          
+          this.drawer.close();
+        } else {
+          this.drawer.open();
+          
+        }
+      });
+    }, 0);
+    
   }
   toggleSidebar() {
     this.drawer.toggle();
