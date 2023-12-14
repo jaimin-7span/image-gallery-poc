@@ -1,17 +1,22 @@
-
 <div class="text-right p-2.5 text-blue-700  border border-b-black mb-5">
     @if (selectedTag?.isActive) {
     <button (click)="onResetFilter()" class="cursor-pointer">Reset Filter</button>
     }
     @else {
-        <h4 class="text-black font-normal">Tags</h4>
+    <h4 class="text-black font-normal">Tags</h4>
     }
 </div>
 
 <div class="flex flex-wrap gap-2 m-2.5">
-
+    @if (tagsArray.length > 0) {
     @for (item of tagsArray; track $index) {
     <span
-        class="bg-blue-100 hover:bg-blue-50 text-blue-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded  border border-blue-400 cursor-pointer" [ngClass]="{'bg-blue-800 text-white hover:bg-blue-800':item.isActive}" (click)="onTagFilter(item)">{{item.tagName}}</span>
+        class="bg-blue-100 hover:bg-blue-50 text-blue-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded  border border-blue-400 cursor-pointer"
+        [ngClass]="{'bg-blue-800 text-white hover:bg-blue-800':item.isActive}"
+        (click)="onTagFilter(item)">{{item.tagName}}</span>
+    }
+    }
+    @if(isLoading){
+    <app-skeleton-loader [skeletonData]="skeletonData" />
     }
 </div>

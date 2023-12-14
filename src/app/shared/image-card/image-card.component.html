@@ -3,7 +3,14 @@
         <mat-icon>remove_red_eye</mat-icon>
     </span>
     <div class="h-32 sm:h-40 md:h-40 lg:h-52 w-full">
-        <img class="h-full w-full  max-w-full rounded-t-lg" src="{{imageData.uploadFile}}" alt="{{imageData.title}}">
+        @if (isLoading) {
+        <ng-template class="h-full w-full  max-w-full rounded-t-lg">
+            <app-skeleton-loader [skeletonData]="skeletonData" />
+        </ng-template>
+        
+        }
+        <img class="h-full w-full  max-w-full rounded-t-lg" (load)="onImageLoad()" src="{{imageData.uploadFile}}"
+            alt="{{imageData.title}}">
     </div>
 
     <div class="p-2 sm:p-4 bg-gray-800 bg-opacity-75 text-white rounded-b-lg">

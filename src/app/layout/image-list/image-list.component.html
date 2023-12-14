@@ -12,22 +12,18 @@
     @if (imageList.length > 0) {
     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         @for (item of imageList; track item) {
-        <app-image-card [imageData]="item" (dialogTrigger)="viewDialog($event)"/>
+        <app-image-card [imageData]="item" (dialogTrigger)="viewDialog($event)" />
         }
     </div>
     }
-    @if(imageList.length == 0 && !isLoding) {
-    <div class="text-center pt-24">
-        No Record Found
-    </div>
+    @if(isEmpty && !isLoading) {
+    
+        <div class="text-center pt-24">
+            No Record Found
+        </div>
+    
     }
-    @if (isLoding) {
-    <ngx-skeleton-loader count="16" appearance="circle" animation="pulse" [theme]="{
-    width:'150px',
-    height: '200px',
-    'margin-right':'10px',
-    'border-radius': '10px',
-    background: 'linear-gradient(90deg, #D9D9D9 0%, rgba(217, 217, 217, 0) 100%)'
-    }"></ngx-skeleton-loader>
+    @if (isLoading) {
+    <app-skeleton-loader [skeletonData]="skeletonData"/>
     }
 </div>
